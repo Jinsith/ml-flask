@@ -7,6 +7,8 @@ from model import HousePriceModel
 data = pd.read_csv('house_prices.csv')
 print("$1")
 print("WElcome")
+print("WElcome")
+
 
 # Split features and target
 X = data[['area', 'bedrooms', 'bathrooms']]
