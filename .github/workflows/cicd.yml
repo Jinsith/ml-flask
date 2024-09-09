@@ -53,7 +53,8 @@ jobs:
       run: |
         pip install pythonanywhere
         mkdir -p $WORKON_HOME
-        pa_autoconfigure_django.py --python=3.8 https://github.com/${{ github.repository }}
+        echo "API Token: $PYTHONANYWHERE_API_TOKEN"
+        pa_autoconfigure_django.py --python=3.8 --nuke https://github.com/${{ github.repository }}
 
     - name: Notify on failure
       if: failure()
