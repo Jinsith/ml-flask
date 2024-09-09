@@ -49,8 +49,10 @@ jobs:
       if: github.event_name == 'push' && github.ref == 'refs/heads/mlops'
       env:
         PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
+        WORKON_HOME: ${{ runner.temp }}/virtualenvs
       run: |
         pip install pythonanywhere
+        mkdir -p $WORKON_HOME
         pa_autoconfigure_django.py --python=3.8 https://github.com/${{ github.repository }}
 
     - name: Notify on failure
