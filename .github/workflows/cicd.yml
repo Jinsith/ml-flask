@@ -7,7 +7,7 @@ on:
     branches: [ mlops ]
 
 jobs:
-  build-and-deploy:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +32,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: List project structure
+      run: |
+        pwd
+        ls -R
+
     - name: Run tests
       run: |
         pip install pytest
-        pytest
+        pytest -v --collect-only
+        pytest -v
 
     - name: Train model
       run: python train.py
@@ -44,24 +50,18 @@ jobs:
       if: github.event_name == 'push' && github.ref == 'refs/heads/mlops'
       env:
         PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
-        WORKON_HOME: ${{ runner.temp }}/virtualenvs
       run: |
         pip install pythonanywhere
-        mkdir -p $WORKON_HOME
         pa_autoconfigure_django.py --python=3.8 https://github.com/${{ github.repository }}
-
-    - name: Notify on success
-      if: success()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        text: Deployment to PythonAnywhere successful!
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 
     - name: Notify on failure
       if: failure()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        text: Deployment to PythonAnywhere failed. Check the logs for details.
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      run: |
+        echo "The workflow has failed. Please check the logs for more information."
+        # You can add more notification methods here, like sending an email or a chat message
+
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "The workflow has completed successfully!"
+        # You can add more notification methods here, like sending an email or a chat message

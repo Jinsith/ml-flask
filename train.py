@@ -9,6 +9,8 @@ print("$1")
 print("WElcome")
 print("WElcome")
 
+def test_example():
+    assert True
 
 # Split features and target
 X = data[['area', 'bedrooms', 'bathrooms']]
