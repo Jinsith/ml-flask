@@ -7,7 +7,7 @@ on:
     branches: [ mlops ]
 
 jobs:
-  build-test-and-deploy:
+  build-test-train-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
 
     - name: List project structure
       run: |
@@ -39,12 +40,17 @@ jobs:
 
     - name: Run tests
       run: |
-        pip install pytest
-        pytest -v --collect-only
         pytest -v
 
     - name: Train model
-      run: python train.py
+      run: |
+        python train.py
+
+    - name: Upload trained model
+      uses: actions/upload-artifact@v2
+      with:
+        name: trained-model
+        path: house_price_model.joblib
 
     - name: Deploy to PythonAnywhere
       if: github.event_name == 'push' && github.ref == 'refs/heads/mlops'
